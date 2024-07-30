@@ -30,7 +30,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'cinemichael.onrender.com').split(',')
 
 
 # Application definition
@@ -138,7 +138,7 @@ STATICFILES_DIRS= (os.path.join(BASE_DIR,'cineUTC/static'),)
 if not DEBUG:
     STATICFILES_ROOT = os.path.join(BASE_DIR,'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
