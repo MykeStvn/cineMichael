@@ -1,0 +1,62 @@
+{%  extends "./plantilla.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDITAR PELÍCULA</title>
+</head>
+<body>
+    <br>
+    <div class="card">
+        <div class="card-title text-center">
+            <h3><b>Editar Película</b></h3>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'procesarActualizacionPelicula' %}" style="color: white;">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{ peliculaEditar.id }}">
+        <div class="form-group">
+            <label for="id_titulo"><b>Título:</b></label>
+            <input type="text" id="id_titulo" name="titulo" value="{{ peliculaEditar.titulo }}" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_duracion"><b>Duración:</b></label>
+            <input type="time" id="id_duracion" name="duracion" value="{{ peliculaEditar.duracion|time:'H:i' }}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="id_sinopsis"><b>Sinopsis:</b></label>
+            <textarea id="id_sinopsis" name="sinopsis" class="form-control" rows="4" required>{{ peliculaEditar.sinopsis }}</textarea>
+        </div>
+        <br>
+        <label for="id_genero">Género:</label>
+    <select id="id_genero" name="genero"  class="form-control" required>
+        {% for genero in generos %}
+            <option value="{{ genero.id }}" {% if genero.id == peliculaEditar.genero_id %} selected {% endif %}>{{ genero.nombre }}</option>
+        {% endfor %}
+    </select><br>
+    
+    <label for="id_director">Director:</label>
+    <select id="id_director" name="director"  class="form-control" required>
+        {% for director in directores %}
+            <option value="{{ director.id }}" {% if director.id == peliculaEditar.director_id %} selected {% endif %}>{{ director.nombre }} {{ director.apellido }}</option>
+        {% endfor %}
+    </select><br>
+    
+    <label for="id_pais">País:</label>
+    <select id="id_pais" name="pais"  class="form-control">
+        <option value="">Seleccione un país</option>
+        {% for pais in paises %}
+            <option value="{{ pais.id }}" {% if pais.id == peliculaEditar.pais_id %} selected {% endif %}>{{ pais.nombre }}</option>
+        {% endfor %}
+    </select><br>
+        <br>
+        <button type="submit" class="btn btn-primary">Guardar Película</button> 
+        <a href="{% url 'listadoPeliculas' %}">Cancelar</a>
+    </form>
+</body>
+</html>
+
+{% endblock %}

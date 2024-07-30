@@ -1,0 +1,66 @@
+{%  extends "./plantilla.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Pelicula</title>
+</head>
+<body>
+    <br>
+    <div class="card">
+        <div class="card-title text-center">
+            <h3><b>Agregar Nueva Película</b></h3>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'guardarPelicula' %}" style="color: white;">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_titulo"><b>Título:</b></label>
+            <input type="text" id="id_titulo" name="titulo" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_duracion"><b>Duración:</b></label>
+            <input type="time" id="id_duracion" name="duracion" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="id_sinopsis"><b>Sinopsis:</b></label>
+            <textarea id="id_sinopsis" name="sinopsis" class="form-control" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="id_genero"><b>Género:</b></label>
+            <select id="id_genero" name="genero" class="form-control" required>
+                <option value="">Seleccione un género</option>
+                {% for genero in generos %}
+                    <option value="{{ genero.id }}">{{ genero.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="id_director"><b>Director:</b></label>
+            <select id="id_director" name="director" class="form-control" required>
+                <option value="">Seleccione un director</option>
+                {% for director in directores %}
+                    <option value="{{ director.id }}">{{ director.nombre }} {{ director.apellido }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="id_pais"><b>País:</b></label>
+            <select id="id_pais" name="pais" class="form-control">
+                <option value="">Seleccione un país</option>
+                {% for pais in paises %}
+                    <option value="{{ pais.id }}">{{ pais.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Guardar Película</button> 
+        <a href="{% url 'listadoPeliculas' %}">Cancelar</a>
+    </form>
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{%  extends "./plantilla.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDITAR Género</title>
+</head>
+<body>
+    <h1 style="color: white;">EDITAR GENERO</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="{% url 'procesarActualizacionGenero' %}" method="post" style="color: white;"> <!--usar metodo post-->
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{generoEditar.id}}">
+                    <label for=""><b>Nombre:</b></label>
+                    <input type="text" name="nombre" class="form-control" id="nombre" value="{{generoEditar.nombre}}" placeholder="Ingrese el nombre del genero">                        
+                    <label for=""><b>Descripcion:</b></label>
+                    <textarea name="descripcion" id="descripcion" class="form-control" rows="3" placeholder="Ingrese la descripción">{{generoEditar.descripcion}}</textarea>
+                    <br>
+                    <button type="submit" class="btn btn-primary">Editar</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'listadoGeneros' %}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "./plantilla.html" %}
+{% load static %}
+{% block body %}
+
+<h1 class="text-center" style="color: white;">GESTIÓN DE DIRECTORES CON PETICIONES ASINCRONAS</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 text-end">
+      <button type="button" class="btn btn-success" onclick="cargarDirectores();">
+        <i class="bi bi-arrow-clockwise"></i>
+        Cargar Directores
+      </button>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <i class="bi bi-plus-circle"></i>
+        Agregar Director
+      </button>
+    </div>
+    <br>
+    <div class="col-md-12" id="contenedor-directores" style="color: white;"></div>
+  </div>
+</div>
+
+<!-- Button trigger modal -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel">Nuevo Director</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="#" id="frm_nuevo_director" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label for=""><b>DNI:</b></label>
+          <input type="text" id="dni" class="form-control" name="dni" placeholder="Ingrese el DNI del director">
+          <br>
+          <label for=""><b>Nombre:</b></label>
+          <input type="text" id="nombre" class="form-control" name="nombre" placeholder="Ingrese el nombre del director">
+          <br>
+          <label for=""><b>Apellido:</b></label>
+          <input type="text" id="apellido" class="form-control" name="apellido" placeholder="Ingrese el apellido del director">
+          <br>
+          <label for=""><b>Estado:</b></label>
+          <input type="checkbox" name="estado" id="estado" class="form-check-input" checked>
+          <br>
+          <label for=""><b>Foto:</b></label>
+          <input type="file" id="foto" class="form-control" name="foto">
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="bi bi-x-circle-fill"></i> Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-floppy-fill"></i> Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+      $("#frm_nuevo_director").validate({
+        rules: {
+          dni: {
+            required: true,
+            minlength: 1,
+            maxlength: 10
+          },
+          nombre: {
+            required: true,
+            minlength: 2,
+            maxlength: 50
+          },
+          apellido: {
+            required: true,
+            minlength: 2,
+            maxlength: 50
+          },          
+          foto:{
+            required: true
+          }
+          // Puedes agregar más reglas según tus necesidades
+        },
+        messages: {
+          dni: {
+            required: "Por favor ingresa el DNI",
+            minlength: "El DNI debe tener al menos 6 caracteres",
+            maxlength: "El DNI no puede tener más de 15 caracteres"
+          },
+          nombre: {
+            required: "Por favor ingresa el nombre",
+            minlength: "El nombre debe tener al menos 2 caracteres",
+            maxlength: "El nombre no puede tener más de 50 caracteres"
+          },
+          apellido: {
+            required: "Por favor ingresa el apellido",
+            minlength: "El apellido debe tener al menos 2 caracteres",
+            maxlength: "El apellido no puede tener más de 50 caracteres"
+          },          
+          foto: {
+            required: "Por favor seleccione una foto"
+          }
+          // Añade mensajes de error para otras reglas según sea necesario
+        },
+        submitHandler: function(form) {
+          event.preventDefault();
+  
+          const formData = new FormData(form);
+  
+          fetch("{% url 'guardarDirector' %}", {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.estado) {
+              console.log(data); // Mensaje por consola
+              Swal.fire({
+                title: "CONFIRMACION",
+                text: data.mensaje,
+                icon: 'success'
+              });
+              $('#exampleModal').modal('hide'); // Cierra la modal
+              form.reset(); // Resetea el formulario
+              cargarDirectores();
+            } else {
+              console.log(data);
+              alert("Error");
+            }
+          })
+          .catch(error => console.error('Error:', error));
+        }
+      });
+    });
+  
+    function cargarDirectores() {
+      fetch('{% url "listarDirectores" %}')
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('contenedor-directores').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  
+    cargarDirectores();
+  </script>
+
+{% endblock %}

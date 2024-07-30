@@ -1,0 +1,42 @@
+{%  extends "./plantilla.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Nuevo Director</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="{% url 'guardarDirector' %}" enctype="multipart/form-data" method="post" style="color: white;"> <!--usar metodo post-->
+                    {% csrf_token %}
+                    <label for=""><b>DNI:</b></label>
+                    <input type="text" name="dni" class="form-control" id="dni" placeholder="Ingrese el DNI">                        
+                    <label for=""><b>Nombre:</b></label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingrese el nombre">
+                    <label for=""><b>Apellido:</b></label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese el apellido">                 
+                    <label for="estado"><b>Estado:</b></label>
+                    <input type="checkbox" name="estado" id="estado" class="form-check-input">
+                    <br>
+                    <label for=""><b>Fotografía:</b></label>
+                    <input type="file" name="foto" id="foto" 
+                    accept="image/*"
+                     class="form-control">
+                    <br><br>
+                    <br>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'listadoDirectores' %}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
+
+{% endblock %}

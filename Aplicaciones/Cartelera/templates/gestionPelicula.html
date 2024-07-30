@@ -1,0 +1,191 @@
+{% extends "./plantilla.html" %}
+{% load static %}
+{% block body %}
+
+<h1 class="text-center" style="color: white;">GESTIÓN DE PELÍCULAS CON PETICIONES ASÍNCRONAS</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 text-end">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <i class="bi bi-plus-circle"></i>
+        Agregar Película
+      </button>
+    </div>
+    <br>
+    <div class="col-md-12" id="contenedor-peliculas" style="color: white;"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel">Nueva Película</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="#" id="frm_nueva_pelicula" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label for="titulo"><b>Título:</b></label>
+          <input type="text" id="titulo" class="form-control" name="titulo" placeholder="Ingrese el título de la película">
+          <br>
+          <label for="duracion"><b>Duración:</b></label>
+          <input type="time" id="duracion" class="form-control" name="duracion" placeholder="Ingrese la duración de la película">
+          <br>
+          <label for="sinopsis"><b>Sinopsis:</b></label>
+          <textarea id="sinopsis" class="form-control" name="sinopsis" placeholder="Ingrese la sinopsis de la película"></textarea>
+          <br>
+        <label for="genero"><b>Género:</b></label>
+        <select id="genero" class="form-control" name="genero">
+            <option value="">Seleccionar género...</option> <!-- Opción por defecto -->
+            {% for genero in generos %}
+            <option value="{{ genero.id }}">{{ genero.nombre }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="director"><b>Director:</b></label>
+        <select id="director" class="form-control" name="director">
+            <option value="">Seleccionar director...</option> <!-- Opción por defecto -->
+            {% for director in directores %}
+            <option value="{{ director.id }}">{{ director.nombre }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="pais"><b>País:</b></label>
+        <select id="pais" class="form-control" name="pais">
+            <option value="">Seleccionar país...</option> <!-- Opción por defecto -->
+            {% for pais in paises %}
+            <option value="{{ pais.id }}">{{ pais.nombre }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+          <label for="portada"><b>Portada:</b></label>
+          <input type="file" id="portada" class="form-control" name="portada">
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="bi bi-x-circle-fill"></i> Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-floppy-fill"></i> Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+      $("#frm_nueva_pelicula").validate({
+        rules: {
+          titulo: {
+            required: true,
+            minlength: 2,
+            maxlength: 250
+          },
+          duracion: {
+            required: true
+            // Puedes añadir más reglas según sea necesario
+          },
+          sinopsis: {
+            required: true,
+            minlength: 10
+          },
+          genero: {
+            required: true
+          },
+          director: {
+            required: true
+          },
+          pais: {
+            required: true
+          },
+          portada: {
+            required: true
+          }
+          // Puedes añadir más reglas según sea necesario para los campos select
+        },
+        messages: {
+          titulo: {
+            required: "Por favor ingrese el título de la película",
+            minlength: "El título debe tener al menos 2 caracteres",
+            maxlength: "El título no puede tener más de 250 caracteres"
+          },
+          duracion: {
+            required: "Por favor ingrese la duración de la película"
+          },
+          sinopsis: {
+            required: "Por favor ingrese la sinopsis de la película",
+            minlength: "La sinopsis debe tener al menos 10 caracteres"
+          },
+          genero: {
+            required: "Por favor seleccione el género"
+          },
+          director: {
+            required: "Por favor seleccione el director"
+          },
+          pais: {
+            required: "Por favor seleccione el país"
+          },
+          portada: {
+            required: "Por favor seleccione una portada"
+          }
+          // Añade mensajes de error para otros campos y reglas según sea necesario
+        },
+        submitHandler: function(form) {
+          event.preventDefault();
+  
+          const formData = new FormData(form);
+  
+          fetch("{% url 'guardarPeliculaF' %}", {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.estado) {
+              console.log(data); // Mensaje por consola
+              Swal.fire({
+                title: "CONFIRMACIÓN",
+                text: data.mensaje,
+                icon: 'success'
+              });
+              $('#exampleModal').modal('hide'); // Cierra la modal
+              form.reset(); // Resetea el formulario
+              cargarPeliculas();
+            } else {
+              console.log(data);
+              Swal.fire({
+                title: "ERROR",
+                text: data.mensaje,
+                icon: 'error'
+              });
+            }
+          })
+          .catch(error => console.error('Error:', error));
+        }
+      });
+    });
+  
+    function cargarPeliculas() {
+    fetch('{% url "listarPeliculas" %}')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('contenedor-peliculas').innerHTML = html;
+        // Inicializa DataTables después de cargar los datos
+        $('#tbl-peliculas').DataTable({
+          "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+          }
+        });
+      })
+      .catch(error => console.error('Error:', error));
+  }
+  
+    cargarPeliculas();
+  </script>
+
+{% endblock %}

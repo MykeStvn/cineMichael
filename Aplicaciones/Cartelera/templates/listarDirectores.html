@@ -1,0 +1,48 @@
+<br>
+    <div class="card">
+        <div class="card-title text-center">
+            <h3><b>LISTADO DE DIRECTORES</b></h3>
+        </div>
+    </div>
+    <br>
+    <br>
+    <table class="table table-bordered table-striped table-hover"  id="tbl-directores">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>DNI</th>
+                <th>NOMBRE</th>
+                <th>APELLIDO</th>
+                <th>ESTADO</th>
+                <th>FOTO</th>
+                <th>ACCIONES</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for directorTemporal in directores %}
+            <tr>
+                <td> {{directorTemporal.id}} </td>
+                <td> {{directorTemporal.dni}} </td>
+                <td> {{directorTemporal.nombre}} </td>
+                <td> {{directorTemporal.apellido}} </td>
+                <td> {{directorTemporal.estado}} </td>
+                <td>
+                    {% if directorTemporal.foto %}
+                        <a href="{{ directorTemporal.foto.url }}" target="_blank"><img src="{{ directorTemporal.foto.url }}" alt="" width="100px" height="100px"></a>
+                        <a download="" href="{{ directorTemporal.foto.url }}">Descargar</a>
+                    {% else %}
+                        No hay foto disponible
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="#" class="btn btn-warning">Editar</a>
+                    <a href="#" onclick="return confirm('¿ESTAS SEGURO DE ELIMINAR ESTE DIRECTOR?')" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<script>
+    let table = new DataTable('#tbl-directores');
+</script>

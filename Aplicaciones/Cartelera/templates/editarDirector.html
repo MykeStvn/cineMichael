@@ -1,0 +1,48 @@
+{%  extends "./plantilla.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDITAR DIRECTOR</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="{% url 'procesarActualizacionDirector' %}" method="post" enctype="multipart/form-data" style="color: white;"> <!--usar metodo post-->
+                    {% csrf_token %}
+                    <input type="hidden" name="id" class="form-control" value="{{directorEditar.id}}">
+                    <label for="dni"><b>DNI:</b></label>
+                    <input type="text" name="dni" class="form-control" id="dni" value="{{directorEditar.dni}}">
+                    <label for="nombre"><b>Nombre:</b></label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" value="{{directorEditar.nombre}}">
+                    <label for="apellido"><b>Apellido:</b></label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" value="{{directorEditar.apellido}}">
+                    <label for="estado"><b>Estado:</b></label>
+                    <input type="checkbox" name="estado" id="estado" class="form-check-input" {% if directorEditar.estado %}checked{% endif %}>
+                    <br>
+                    <div>
+                        <label for=""><b>Fotografía Actual:</b></label><br>
+                        {% if directorEditar.foto %}
+                            <img src="{{ directorEditar.foto.url }}" alt="Foto del Director" width="180px" height="210px">
+                        {% else %}
+                            <p>No hay foto disponible</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="foto"><b>Seleccionar nueva fotografía:</b></label><br>
+                        <input type="file" name="foto" id="foto" accept="image/*" class="form-control">
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'listadoDirectores' %}" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
