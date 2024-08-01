@@ -59,7 +59,7 @@ def nuevaPelicula(request):
     generos = Genero.objects.all()
     directores = Director.objects.all()
     paises = Pais.objects.all()
-    return render(request, 'Cartelera/nuevapelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
+    return render(request, 'Cartelera/nuevaPelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
 
 # Función para guardar género
 def guardarGenero(request):
@@ -95,7 +95,7 @@ def guardarPais(request):
 # Renderizar formulario de actualización género
 def editarGenero(request, id):
     generoEditar = get_object_or_404(Genero, id=id)
-    return render(request, 'Cartelera/editargenero.html', {'generoEditar': generoEditar})
+    return render(request, 'Cartelera/editarGenero.html', {'generoEditar': generoEditar})
 
 # Actualizar los nuevos datos en la BDD
 def procesarActualizacionGenero(request):
@@ -139,7 +139,7 @@ def procesarActualizacionDirector(request):
 # Renderizar formulario de actualización de país
 def editarPais(request, id):
     paisEditar = get_object_or_404(Pais, id=id)
-    return render(request, 'Cartelera/editarpais.html', {'paisEditar': paisEditar})
+    return render(request, 'Cartelera/editarPais.html', {'paisEditar': paisEditar})
 
 # Actualizar los datos de país
 def procesarActualizacionPais(request):
@@ -167,7 +167,7 @@ def nuevaPelicula(request):
     generos = Genero.objects.all()
     directores = Director.objects.all()
     paises = Pais.objects.all()
-    return render(request, 'Cartelera/nuevapelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
+    return render(request, 'Cartelera/nuevaPelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
 
 def guardarPelicula(request):
     if request.method == 'POST':
@@ -198,7 +198,7 @@ def editarPelicula(request, id):
     directores = Director.objects.all()
     paises = Pais.objects.all()
     
-    return render(request, 'Cartelera/editarpelicula.html', {'peliculaEditar': peliculaEditar, 'generos': generos, 'directores': directores, 'paises': paises})
+    return render(request, 'Cartelera/editarPelicula.html', {'peliculaEditar': peliculaEditar, 'generos': generos, 'directores': directores, 'paises': paises})
 
 def procesarActualizacionPelicula(request):
     if request.method == 'POST':
@@ -298,7 +298,7 @@ def gestionPelicula(request):
     generos = Genero.objects.all()
     directores = Director.objects.all()
     paises = Pais.objects.all()
-    return render(request, 'Cartelera/gestionpelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
+    return render(request, 'Cartelera/gestionPelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
 
 # Listar películas
 def listarPeliculas(request):
