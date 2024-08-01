@@ -1,0 +1,84 @@
+{%  extends "./plantilla.html" %}
+{% load static %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | </title>
+</head>
+
+<style>
+    .blur-background {
+  position: relative;
+  z-index: 1;
+}
+
+.blur-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url(https://img.freepik.com/fotos-premium/cine-sala-cine-filas-asientos-azules-fondo-negro-espacio-copia-banner-horizontal_118047-4491.jpg);
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px); /* Ajusta el valor del desenfoque según sea necesario */
+  z-index: -1;
+}
+
+.blur-background .row {
+  position: relative;
+  z-index: 2;
+}
+
+</style>
+
+
+
+<body>
+    <!--AQUI PONER UN CARRUSEL Y DEBAJO MISION Y VISION (DISEÑO PARA EL SITIO)-->
+    <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="{% static 'img/banner_cinema.jpg' %}" class="d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'img/banner_hachiko.jpg' %}" class="d-block w-100 h-80" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'img/banner_rapidoyfurioso.jpg' %}"class="d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'img/combo_cine.jpg' %}"class="d-block w-100" alt="...">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Siguiente</span>
+        </button>
+      </div>
+      <br><br>
+      <div class="container overflow-hidden text-center blur-background">
+        <div class="row gx-5" style="color: rgb(255, 255, 255);">
+          <div class="col">
+            <div class="p-3"><b>MISIÓN</b></div>
+            <div class="p-3">Ofrecer una experiencia cinematográfica inigualable, proporcionando una combinación perfecta de tecnología de vanguardia, comodidad excepcional y una variada selección de películas. Nos dedicamos a crear momentos memorables para cada espectador, promoviendo el amor por el cine y la cultura.</div>
+          </div>
+          <div class="col">
+            <div class="p-3"><b>VISIÓN</b></div>
+            <div class="p-3">Ser el cine preferido por nuestra comunidad, reconocido por nuestro compromiso con la excelencia en el servicio, la innovación constante y la pasión por el arte del cine. Aspiramos a conectar a las personas a través de historias poderosas y a ser un punto de referencia cultural y de entretenimiento.</div>
+          </div>
+        </div>
+      </div>
+      
+      <br><br>
+</body>
+</html>
+{% endblock %}

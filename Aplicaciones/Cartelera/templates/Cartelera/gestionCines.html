@@ -1,0 +1,121 @@
+{% extends "./plantilla.html" %}
+{% load static %}
+{% block body %}
+
+
+<h1 class="text-center" style="color: white;">GESTIÓN DE CINES CON PETICIONES ASINCRONAS</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 text-end">
+
+      <button type="button" class="btn btn-success" onclick="cargarCines();">
+        <i class="bi bi-arrow-clockwise"></i>
+        Cargar Cines
+      </button>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <i class="bi bi-plus-circle"></i>
+        Agregar Cine
+      </button>
+    </div>
+    <br>
+    <div class="col-md-12" id="contenedor-cines" style="color: white;"></div>
+  </div>
+</div>
+
+<!-- Button trigger modal -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel">Nuevo Cine</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="#"  id="frm_nuevo_cine">
+          {% csrf_token %}
+          <label for=""><b>Nombre:</b></label>
+          <input type="text" id="nombre" class="form-control" name="nombre" placeholder="Ingrese el nombre del cine">
+          <br>
+          <label for=""><b>Dirección:</b></label>
+          <input type="text" id="direccion" class="form-control" name="direccion" placeholder="Ingrese la dirección">
+          <br>
+          <label for=""><b>Teléfono:</b></label>
+          <input type="text" id="telefono" class="form-control" name="telefono" placeholder="Ingrese el telefono">
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="bi bi-x-circle-fill"></i> Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-floppy-fill"></i> Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $("#frm_nuevo_cine").validate({
+    rules:{
+      nombre:{
+        required:true,
+        minlength: 10,
+        maxlength: 200
+      },
+      direccion:{
+        required:true
+      },
+      telefono:{
+        required:true,
+        minlength: 10,
+        
+      }
+    },
+    messages:{
+      nombre:{
+        required:"Por favor ingresa el nombre",
+        minlength: "El nombre debe tener por lo menos 10 letras",
+        maxlength: "Máximo 200 letras"
+      },
+      direccion:{
+        required:"Ingrese la direccion"
+      },
+      telefono:{
+        required:"Ingrese el teléfono",
+        minlength:"El telefono debe tener 10 digitos",
+        
+      }
+    },
+    //ESTO SE INVOCA CUANDO TODO EL FORMULARIO INGRESA CORRECTAMENTE LOS DATOS O ESTA A PUNTO DE INGRESAR CORRECTAMENTE LOS DATOS
+    submitHandler: function (formulario) {
+      //empieza la petición ajax
+      $.ajax({
+        url: "{% url 'guardarCine' %}",
+        type: 'post',
+        data: $(formulario).serialize(),
+        success: function (data) {
+          if (data.estado) {
+            console.log(data); //mensaje por consola
+            Swal.fire({
+              title: "CONFIRMACION",
+              text: data.mensaje,
+              icon: 'success'
+            });
+            $("#exampleModal").modal('hide'); //cierra la modal
+            $(formulario)[0].reset(); //resetea el formulario
+            cargarCines();
+          } else {
+            console.log(data);
+            alert("Error")
+          }
+        },
+      });
+    }
+  })
+
+  // CREANDO UNA FUNCION PARA CARGAR CINES DENTRO DE LA PAGINA (CARGAS ASINCRONAS)
+  function cargarCines(){
+    $("#contenedor-cines").load('{% url "listadoCines" %}');
+  }
+  cargarCines();
+</script>
+
+{% endblock %}

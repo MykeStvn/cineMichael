@@ -1,0 +1,80 @@
+{%  extends "./plantilla.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Nuevo Género</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            
+            <div class="col-md-12">
+                <form action="{%url 'guardarGenero' %}" method="post" id="frm_nuevo_genero" enctype="multipart/form-data" style="color: white;"> <!--usar metodo post enctype="multipart/form-data" para pasar achivos a los views-->
+                    {% csrf_token %}
+                    <label for=""><b>Nombre:</b></label>
+                    <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Ingrese el nombre del genero">                        
+                    <br>
+                    <label for=""><b>Descripción:</b></label>
+                    <textarea name="descripcion" id="descripcion" class="form-control" rows="3" placeholder="Ingrese la descripción"></textarea>
+                    <br>
+                    <label for=""><b>Fotografía:</b></label>
+                    <input type="file" name="foto" id="foto" 
+                    accept="image/*"
+                    required class="form-control">
+                    <br><br>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'listadoGeneros' %}">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
+
+<script>
+    $("#frm_nuevo_genero").validate({
+        rules:{
+            nombre:{
+                required: true,
+                minlength:3,
+                maxlength:10
+            },
+            descripcion:{
+                required: true
+            },
+            foto:{
+                required: true
+            }
+        },
+        messages:{
+            nombre:{
+                required: "Por favor ingresa el nombre",
+                minlength: "El nombre debe tener por lo menos 3 letras",
+                maxlength: "Máximo 10 letras"
+            },
+            descripcion:{
+                required: "La descripción es obligatoria"
+            },
+            foto:{
+                required: "Por favor seleccione la foto"
+            }
+
+        }
+    })
+</script>
+
+<script>
+    $(document).ready(function() {
+        $("#foto").fileinput({                       
+            showBrowse: true,
+            browseOnZoneClick: true            
+        });
+    });
+    </script>
+
+{% endblock %}

@@ -2,133 +2,117 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
- #importacion del Modelo Genero
 from Aplicaciones.Cartelera.enviar_correo import enviar_correo_nuevo_cine
 from Aplicaciones.Cartelera.models import Cine, Director, Genero, Pais, Pelicula
-
-#importar contrib para controlar las alertas
 from django.contrib import messages
-
 
 # Create your views here.
 
 def home(request):
-    return render(request,"home.html")
+    return render(request, "Cartelera/home.html")
 
-#Renderizando el template listadogeneros
-
+# Renderizando el template listadoGeneros
 def listadoGeneros(request):
-    generosBdd=Genero.objects.all() #esta variable se conecta al modelo genero y trae todos los objetos
-    return render(request, "listadoGeneros.html", {'generos':generosBdd}) #aqui se llama al modelo generos para mostrarlo en la tabla
+    generosBdd = Genero.objects.all()
+    return render(request, "Cartelera/listadoGeneros.html", {'generos': generosBdd})
 
 def listadoPeliculas(request):
-    peliculasBdd=Pelicula.objects.all()
-    return render(request,"listadoPeliculas.html", {'peliculas':peliculasBdd})
+    peliculasBdd = Pelicula.objects.all()
+    return render(request, "Cartelera/listadoPeliculas.html", {'peliculas': peliculasBdd})
 
-#renderizar listado directores
+# Renderizar listado directores
 def listadoDirectores(request):
-    directoresBdd=Director.objects.all()
-    return render(request, "listadoDirectores.html", {'directores':directoresBdd})
+    directoresBdd = Director.objects.all()
+    return render(request, "Cartelera/listadoDirectores.html", {'directores': directoresBdd})
 
 def listadoPaises(request):
-    paisesBdd=Pais.objects.all()
-    return render(request,"listadoPaises.html", {'paises':paisesBdd})
+    paisesBdd = Pais.objects.all()
+    return render(request, "Cartelera/listadoPaises.html", {'paises': paisesBdd})
 
-#Se recibe el id para eliminar un genero (parámetro)
-
-def eliminarGenero(request,id):
-    generoEliminar=Genero.objects.get(id=id)
+# Eliminar un genero
+def eliminarGenero(request, id):
+    generoEliminar = get_object_or_404(Genero, id=id)
     generoEliminar.delete()
-    messages.success(request,'Género eliminado con éxito!')
+    messages.success(request, 'Género eliminado con éxito!')
     return redirect('listadoGeneros')
 
-def eliminarDirector(request,id):
-    directorEliminar=Director.objects.get(id=id)
+def eliminarDirector(request, id):
+    directorEliminar = get_object_or_404(Director, id=id)
     directorEliminar.delete()
-    messages.success(request,'Director eliminado con éxito!')
+    messages.success(request, 'Director eliminado con éxito!')
     return redirect('listadoDirectores')
 
-#RENDERIZAR PAGINA NUEVO GENERO
+# Renderizar formulario nuevo género
 def nuevoGenero(request):
-    return render(request,"nuevoGenero.html")
+    return render(request, "Cartelera/nuevoGenero.html")
 
-#renderizar pagina nuevo director
-
+# Renderizar formulario nuevo director
 def nuevoDirector(request):
-    return render(request,"nuevoDirector.html")
+    return render(request, "Cartelera/nuevoDirector.html")
 
-#renderizar pagina nuevo pais
-
+# Renderizar formulario nuevo país
 def nuevoPais(request):
-    return render(request,"nuevoPais.html")
+    return render(request, "Cartelera/nuevoPais.html")
 
-#renderizar pagina nueva pelicula
+# Renderizar página nueva película
+def nuevaPelicula(request):
+    generos = Genero.objects.all()
+    directores = Director.objects.all()
+    paises = Pais.objects.all()
+    return render(request, 'Cartelera/nuevapelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
 
-#def nuevaPelicula(request):
-#    return render(request,"nuevaPelicula.html")
-
-
-#FUNCION PARA GUARDAR GENEROS
-
+# Función para guardar género
 def guardarGenero(request):
-    nom=request.POST["nombre"] 
-    des=request.POST["descripcion"]  
-    fot=request.FILES.get("foto")
-    nuevoGenero=Genero.objects.create(nombre=nom,descripcion=des,foto=fot) #pasar parametros segun nuestra bd y segun las variables que creamos
-    #CONTROLAR ALERTAS
-    messages.success(request,'Género registrado con éxito!')
+    nom = request.POST["nombre"]
+    des = request.POST["descripcion"]
+    fot = request.FILES.get("foto")
+    Genero.objects.create(nombre=nom, descripcion=des, foto=fot)
+    messages.success(request, 'Género registrado con éxito!')
     return redirect('listadoGeneros')
 
-#FUNCION PARA GUARDAR DIRECTOR
+# Función para guardar director
 def guardarDirector(request):
-    dni=request.POST["dni"]
-    nombre=request.POST["nombre"]
-    apellido=request.POST["apellido"]
-    estado= 'estado' in request.POST
-    foto=request.FILES.get("foto")
-    nuevoDirector=Director.objects.create(dni=dni,nombre=nombre,apellido=apellido,estado=estado,foto=foto)
-    return JsonResponse({ #ESTE JSONRESPONSE SE IMPORTA AL INICIO
+    dni = request.POST["dni"]
+    nombre = request.POST["nombre"]
+    apellido = request.POST["apellido"]
+    estado = 'estado' in request.POST
+    foto = request.FILES.get("foto")
+    Director.objects.create(dni=dni, nombre=nombre, apellido=apellido, estado=estado, foto=foto)
+    return JsonResponse({
         'estado': True,
         'mensaje': 'Director registrado exitosamente'
     })
-    # #CONTROLAR ALERTAS
-    # messages.success(request,'Director registrado con éxito!')
-    # return redirect('listadoDirectores')
 
-#FUNCION PARA GUARDAR PAIS
-
+# Función para guardar país
 def guardarPais(request):
-    nom=request.POST["nombre"] 
-    cont=request.POST["continente"]
-    cap=request.POST["capital"]   
-    nuevoPais=Pais.objects.create(nombre=nom,continente=cont,capital=cap) #pasar parametros segun nuestra bd y segun las variables que creamos
-    #CONTROLAR ALERTAS
-    messages.success(request,'País registrado con éxito!')
+    nom = request.POST["nombre"]
+    cont = request.POST["continente"]
+    cap = request.POST["capital"]
+    Pais.objects.create(nombre=nom, continente=cont, capital=cap)
+    messages.success(request, 'País registrado con éxito!')
     return redirect('listadoPaises')
 
-#Renderizar formulario de actualización genero
-def editarGenero(request,id):
-    generoEditar=Genero.objects.get(id=id)
-    return render (request,'editargenero.html',{'generoEditar':generoEditar})
+# Renderizar formulario de actualización género
+def editarGenero(request, id):
+    generoEditar = get_object_or_404(Genero, id=id)
+    return render(request, 'Cartelera/editargenero.html', {'generoEditar': generoEditar})
 
-
-
-#Actualizar los nuevos datos en la bdd
+# Actualizar los nuevos datos en la BDD
 def procesarActualizacionGenero(request):
-    id=request.POST["id"]
-    nombre=request.POST["nombre"]
-    descripcion=request.POST["descripcion"]
-    generoConsultado=Genero.objects.get(id=id)
-    generoConsultado.nombre=nombre
-    generoConsultado.descripcion=descripcion
+    id = request.POST["id"]
+    nombre = request.POST["nombre"]
+    descripcion = request.POST["descripcion"]
+    generoConsultado = get_object_or_404(Genero, id=id)
+    generoConsultado.nombre = nombre
+    generoConsultado.descripcion = descripcion
     generoConsultado.save()
-    messages.success(request,'Genero Actualizado Exitosamente')
-    return redirect(listadoGeneros)
+    messages.success(request, 'Género actualizado exitosamente')
+    return redirect('listadoGeneros')
 
-#renderizar formulario de actualizacion director
-def editarDirector(request,id):
-    directorEditar=Director.objects.get(id=id)
-    return render (request,'editarDirector.html',{'directorEditar':directorEditar})
+# Renderizar formulario de actualización director
+def editarDirector(request, id):
+    directorEditar = get_object_or_404(Director, id=id)
+    return render(request, 'Cartelera/editarDirector.html', {'directorEditar': directorEditar})
 
 def procesarActualizacionDirector(request):
     if request.method == 'POST':
@@ -137,59 +121,53 @@ def procesarActualizacionDirector(request):
         nombre = request.POST.get("nombre")
         apellido = request.POST.get("apellido")
         estado = 'estado' in request.POST
-        # Obtener el director actual
         directorConsultado = get_object_or_404(Director, id=id)
-        # Actualizar los campos del director
         directorConsultado.dni = dni
         directorConsultado.nombre = nombre
         directorConsultado.apellido = apellido
         directorConsultado.estado = estado
-        # Actualizar la foto solo si se ha subido una nueva
         if 'foto' in request.FILES:
             if directorConsultado.foto:
-                directorConsultado.foto.delete()  # Eliminar la foto antigua
+                directorConsultado.foto.delete()
             directorConsultado.foto = request.FILES['foto']
-        # Guardar los cambios
         directorConsultado.save()
-        # Mostrar mensaje de éxito
-        messages.success(request, 'Director Actualizado Exitosamente')
+        messages.success(request, 'Director actualizado exitosamente')
         return redirect('listadoDirectores')
     else:
         return redirect('listadoDirectores')
 
-#Renderizar formulario de actualización de pais
-def editarPais(request,id):
-    paisEditar=Pais.objects.get(id=id)
-    return render (request,'editarpais.html',{'paisEditar':paisEditar})
+# Renderizar formulario de actualización de país
+def editarPais(request, id):
+    paisEditar = get_object_or_404(Pais, id=id)
+    return render(request, 'Cartelera/editarpais.html', {'paisEditar': paisEditar})
 
-#actualizar los datos de pais
+# Actualizar los datos de país
 def procesarActualizacionPais(request):
-    id=request.POST["id"]
-    nombre=request.POST["nombre"]
-    continente=request.POST["continente"]
-    capital=request.POST["capital"]
-    paisConsultado=Pais.objects.get(id=id)
-    paisConsultado.nombre=nombre
-    paisConsultado.continente=continente
-    paisConsultado.capital=capital
+    id = request.POST["id"]
+    nombre = request.POST["nombre"]
+    continente = request.POST["continente"]
+    capital = request.POST["capital"]
+    paisConsultado = get_object_or_404(Pais, id=id)
+    paisConsultado.nombre = nombre
+    paisConsultado.continente = continente
+    paisConsultado.capital = capital
     paisConsultado.save()
-    messages.success(request,'Pais Actualizado Exitosamente')
-    return redirect(listadoPaises)
-
-#eliminarPais
-def eliminarPais(request,id):
-    paisEliminar=Pais.objects.get(id=id)
-    paisEliminar.delete()
-    messages.success(request,'País eliminado con éxito!')
+    messages.success(request, 'País actualizado exitosamente')
     return redirect('listadoPaises')
 
+# Eliminar país
+def eliminarPais(request, id):
+    paisEliminar = get_object_or_404(Pais, id=id)
+    paisEliminar.delete()
+    messages.success(request, 'País eliminado con éxito!')
+    return redirect('listadoPaises')
 
-#nueva pelicula
+# Página nueva película
 def nuevaPelicula(request):
     generos = Genero.objects.all()
     directores = Director.objects.all()
     paises = Pais.objects.all()
-    return render(request, 'nuevapelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
+    return render(request, 'Cartelera/nuevapelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
 
 def guardarPelicula(request):
     if request.method == 'POST':
@@ -200,7 +178,7 @@ def guardarPelicula(request):
         director_id = request.POST['director']
         pais_id = request.POST.get('pais', None)
         
-        nueva_pelicula = Pelicula.objects.create(
+        Pelicula.objects.create(
             titulo=titulo,
             duracion=duracion,
             sinopsis=sinopsis,
@@ -213,15 +191,14 @@ def guardarPelicula(request):
     
     return redirect('nuevaPelicula') 
 
-
-#editar pelicula
+# Editar película
 def editarPelicula(request, id):
     peliculaEditar = get_object_or_404(Pelicula, id=id)
     generos = Genero.objects.all()
     directores = Director.objects.all()
     paises = Pais.objects.all()
     
-    return render(request, 'editarpelicula.html', {'peliculaEditar': peliculaEditar, 'generos': generos, 'directores': directores, 'paises': paises})
+    return render(request, 'Cartelera/editarpelicula.html', {'peliculaEditar': peliculaEditar, 'generos': generos, 'directores': directores, 'paises': paises})
 
 def procesarActualizacionPelicula(request):
     if request.method == 'POST':
@@ -233,7 +210,7 @@ def procesarActualizacionPelicula(request):
         director_id = request.POST["director"]
         pais_id = request.POST["pais"] if "pais" in request.POST else None
         
-        peliculaConsultada = Pelicula.objects.get(id=id)
+        peliculaConsultada = get_object_or_404(Pelicula, id=id)
         peliculaConsultada.titulo = titulo
         peliculaConsultada.duracion = duracion
         peliculaConsultada.sinopsis = sinopsis
@@ -246,88 +223,52 @@ def procesarActualizacionPelicula(request):
         return redirect('listadoPeliculas')
     else:
         messages.error(request, 'Error al procesar la actualización de la película.')
-        return redirect('listadoPeliculas')  # O redireccionar a donde sea necesario en caso de error
+        return redirect('listadoPeliculas')
     
-#eliminarPelicula
-def eliminarPelicula(request,id):
-    peliculaEliminar=Pelicula.objects.get(id=id)
+# Eliminar película
+def eliminarPelicula(request, id):
+    peliculaEliminar = get_object_or_404(Pelicula, id=id)
     peliculaEliminar.delete()
-    messages.success(request,'Película eliminada con éxito!')
+    messages.success(request, 'Película eliminada con éxito!')
     return redirect('listadoPeliculas')
 
-
-#FUNCION PARA GESTIONAR CRUD CINE (9-JUL-2024)
+# Función para gestionar cines
 def gestionCines(request):
-    return render (request,'gestionCines.html')
+    return render(request, 'Cartelera/gestionCines.html')
 
-
-
-# #Insertando cines mediante AJAX en la Base de Datos
-# def guardarCine(request):
-#     nom=request.POST["nombre"]
-#     dir=request.POST["direccion"]
-#     tel=request.POST["telefono"]
-#     nuevoCine=Cine.objects.create(nombre=nom,direccion=dir,telefono=tel)    
-#     return JsonResponse({
-#         'estado': True,
-#         'mensaje': 'Género registrado exitosamente.',
-#         'cine':nuevoCine
-#     })
-
+# Guardar cine con notificación por correo
 def guardarCine(request):
-    nom=request.POST["nombre"]
-    dir=request.POST["direccion"]
-    tel=request.POST["telefono"]
-    nuevoCine=Cine.objects.create(nombre=nom,direccion=dir,telefono=tel) #se importa el CINE
-
+    nom = request.POST["nombre"]
+    dir = request.POST["direccion"]
+    tel = request.POST["telefono"]
+    nuevoCine = Cine.objects.create(nombre=nom, direccion=dir, telefono=tel)
+    
     enviar_correo_nuevo_cine(
         nombre_cine=nuevoCine.nombre,
         direccion_cine=nuevoCine.direccion,
         telefono_cine=nuevoCine.telefono
     )
-    return JsonResponse({ #ESTE JSONRESPONSE SE IMPORTA AL INICIO
+    
+    return JsonResponse({
         'estado': True,
         'mensaje': 'Cine registrado exitosamente'
     })
 
-#INSERTAR UN CINES CON AJAX
-# @csrf_exempt
-# def guardarCine(request):
-#     if request.method == 'POST':
-#         try:
-#             data = json.loads(request.body)
-#             nom = data.get('nombre')
-#             dir = data.get('direccion')
-#             tel = data.get('telefono')
-            
-#             nuevoCine = Cine.objects.create(nombre=nom, direccion=dir, telefono=tel)
-#             return JsonResponse({
-#                 'estado': True,
-#                 'mensaje': 'Cine registrado exitosamente',
-#                 'cine': {
-#                     'nombre': nuevoCine.nombre,
-#                     'direccion': nuevoCine.direccion,
-#                     'telefono': nuevoCine.telefono
-#                 }
-#             }, status=201)
-#         except json.JSONDecodeError:
-#             return JsonResponse({'error': 'JSON mal formado'}, status=400)
-#     else:
-#         return JsonResponse({'error': 'Método no permitido'}, status=405)
-
+# Listado de cines
 def listadoCines(request):
-    cinesBdd=Cine.objects.all()
-    return render(request,"listadoCines.html", {'cines':cinesBdd})
+    cinesBdd = Cine.objects.all()
+    return render(request, "Cartelera/listadoCines.html", {'cines': cinesBdd})
 
+# Función para gestionar directores
 def gestionDirector(request):
-    return render (request,'gestionDirector.html')
+    return render(request, 'Cartelera/gestionDirector.html')
 
+# Listar directores
 def listarDirectores(request):
-    directoresBdd=Director.objects.all()
-    return render(request,"listarDirectores.html", {'directores':directoresBdd})
+    directoresBdd = Director.objects.all()
+    return render(request, "Cartelera/listarDirectores.html", {'directores': directoresBdd})
 
-#MANEJAR ASINCRONA CON FETCH
-
+# Manejar creación de película con fetch (asíncrono)
 def guardarPeliculaF(request):
     if request.method == 'POST':
         titulo = request.POST['titulo']
@@ -337,7 +278,7 @@ def guardarPeliculaF(request):
         director_id = request.POST['director']
         pais_id = request.POST.get('pais', None)
         
-        nueva_pelicula = Pelicula.objects.create(
+        Pelicula.objects.create(
             titulo=titulo,
             duracion=duracion,
             sinopsis=sinopsis,
@@ -345,20 +286,21 @@ def guardarPeliculaF(request):
             director_id=director_id,
             pais_id=pais_id
         )
-        return JsonResponse({ #ESTE JSONRESPONSE SE IMPORTA AL INICIO
-        'estado': True,
-        'mensaje': 'Película registrada exitosamente'
-    })
+        return JsonResponse({
+            'estado': True,
+            'mensaje': 'Película registrada exitosamente'
+        })
     
-    return redirect('gestionPelicula') 
+    return redirect('gestionPelicula')
 
+# Página de gestión de películas
 def gestionPelicula(request):
     generos = Genero.objects.all()
     directores = Director.objects.all()
     paises = Pais.objects.all()
-    return render(request, 'gestionpelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
-    
+    return render(request, 'Cartelera/gestionpelicula.html', {'generos': generos, 'directores': directores, 'paises': paises})
 
+# Listar películas
 def listarPeliculas(request):
-    peliculasBdd=Pelicula.objects.all()
-    return render(request,"listarPeliculas.html", {'peliculas':peliculasBdd})
+    peliculasBdd = Pelicula.objects.all()
+    return render(request, "Cartelera/listarPeliculas.html", {'peliculas': peliculasBdd})
